@@ -1,0 +1,36 @@
+<h1> <%= @user[:name] %> </h1>
+<h2> Secrets </h2>
+<% @user.secrets.each do |s| %>
+<h4> <%= s.content %> </h4>
+<p><%= s.likes.count %> likes</p>
+<% if s.users_liked.include?(current_user) %>
+<form action='/likes/<%= s.find_like_id current_user%>' method='post'>
+	<input type='hidden' name='_method' value='delete'>
+	<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+	<input type='submit' value='Unlike'>
+</form>
+<% else %> 
+<form action='/likes' method='post'>
+	<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+	<input type='hidden' name='like[secret_id]' value='<%= s.id %>'>
+	<input type='hidden' name='like[user_id]' value='<%= session[:user_id] %>'>
+	<input type='submit' value='Like'>
+</form>
+<% end %>  
+<form action="/secrets/<%= s[:id] %>" method="post">
+	<input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+	<input type='hidden' name='_method' value='delete'>
+	<input type="hidden" name="id" value="<%= s[:id] %>">
+	<input type="submit" name="Delete" value="Delete">
+</form>
+<% end %>
+<h3> Add a new Secret </h3>
+<form action="/secrets/" method="post">
+	<input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+	<input type="text" name="secret[content]">
+	<input type="hidden" name="secret[user_id]" value="<%= session[:user_id] %>">
+	<input type="submit" name="Create Secret" value="Create Secret">
+
+</form>
+
+<p><a href="/users/<%=@user[:id]%>/edit">Edit Profile</a></p>
